@@ -90,6 +90,10 @@ def generate_creature(word):
         grid[cursor_x+size][cursor_y+size+2] = (255,255,255)
     move_cursor()
 
+    if cursor_x + 10 >= GRID_SIZE:
+        cursor_x = 5
+        cursor_y += 10
+
 rules = {
     "h": draw_h,
     "e": draw_e,
@@ -122,7 +126,6 @@ while True:
 
             if key.isalpha():
                 typed_text += key
-            print(key)
 
             if event.key == pygame.K_BACKSPACE:
                 
