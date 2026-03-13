@@ -27,6 +27,56 @@ clock = pygame.time.Clock()
 cursor_x = 5
 cursor_y = 5
 
+def draw_h():
+    global cursor_x, cursor_y
+
+    for i in range(5):
+        for j in range(5):
+            grid[cursor_x+i][cursor_y+j] = (255,255,255)
+
+def draw_e():
+    global cursor_x, cursor_y
+
+    grid[cursor_x+1][cursor_y+1] = (255,255,255)
+    grid[cursor_x+3][cursor_y+1] = (255,255,255)
+
+def draw_l():
+    global cursor_x, cursor_y
+
+    for j in range(5):
+        grid[cursor_x+2][cursor_y+j] = (255,255,255)
+
+def draw_o():
+    global cursor_x, cursor_y
+
+    for i in range(5):
+        grid[cursor_x+i][cursor_y] = (255,255,255)
+        grid[cursor_x+i][cursor_y+4] = (255,255,255)
+
+    for j in range(5):
+        grid[cursor_x][cursor_y+j] = (255,255,255)
+        grid[cursor_x+4][cursor_y+j] = (255,255,255)
+
+def move_cursor():
+    global cursor_x, cursor_y
+
+    cursor_x += 6
+
+    if cursor_x + 5 >= GRID_SIZE:
+        cursor_x = 5
+        cursor_y += 6
+
+    if cursor_y + 5 >= GRID_SIZE:
+        cursor_x = 5
+        cursor_y = 5
+
+rules = {
+    "h": draw_h,
+    "e": draw_e,
+    "l": draw_l,
+    "o": draw_o
+}
+
 while True:
     
     if pygame.mouse.get_pressed()[0]:
@@ -49,31 +99,24 @@ while True:
             key = event.unicode
             print(key)
 
-            if key == "h":
+            if event.key == pygame.K_BACKSPACE:
+                
+                cursor_x -= 6
+                if cursor_x < 5:
+                    cursor_x = GRID_SIZE - 11
+                    cursor_y -= 6
+                
+                if cursor_y < 5:
+                    cursor_y = 5
+
                 for i in range(5):
                     for j in range(5):
-                        grid[cursor_x+i][cursor_y+j] = (255,255,255)
-                cursor_x += 6
+                        grid[cursor_x+i][cursor_y+j] = (0,0,0)
 
-            elif key == "e":
-                grid[cursor_x+1][cursor_y+1] = (255,255,255)
-                grid[cursor_x+3][cursor_y+1] = (255,255,255)
-                cursor_x += 6
 
-            elif key == "l":
-                for j in range(5):
-                    grid[cursor_x+2][cursor_y+j] = (255,255,255)
-                cursor_x += 6
-
-            elif key == "o":
-                for i in range(5):
-                    grid[cursor_x+i][cursor_y] = (255,255,255)
-                    grid[cursor_x+i][cursor_y+4] = (255,255,255)
-                
-                for j in range(5):
-                    grid[cursor_x][cursor_y+j] = (255,255,255)
-                    grid[cursor_x+4][cursor_y+j] = (255,255,255)
-                cursor_x += 6
+            if key in rules:
+                rules[key]()
+                move_cursor()
 
     screen.fill((30,30,30))
 
