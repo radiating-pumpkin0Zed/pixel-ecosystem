@@ -25,55 +25,27 @@ grid[40][5] = (255,255,0)
 
 clock = pygame.time.Clock()
 
-cursor_x = 5
-cursor_y = 5
+def area_is_free(x,y,size):
+    for i in range(size):
+        for j in range(size):
 
-def draw_h():
-    global cursor_x, cursor_y
+            if x+i >= GRID_SIZE or y+j >= GRID_SIZE:
+                return False
 
-    for i in range(5):
-        for j in range(5):
-            grid[cursor_x+i][cursor_y+j] = color
-
-def draw_e():
-    global cursor_x, cursor_y
-
-    grid[cursor_x+1][cursor_y+1] = color
-    grid[cursor_x+3][cursor_y+1] = color
-
-def draw_l():
-    global cursor_x, cursor_y
-
-    for j in range(5):
-        grid[cursor_x+2][cursor_y+j] = color
-
-def draw_o():
-    global cursor_x, cursor_y
-
-    for i in range(5):
-        grid[cursor_x+i][cursor_y] = color
-        grid[cursor_x+i][cursor_y+4] = color
-
-    for j in range(5):
-        grid[cursor_x][cursor_y+j] = color
-        grid[cursor_x+4][cursor_y+j] = color
-
-def move_cursor():
-    global cursor_x, cursor_y
-
-    cursor_x += 6
-
-    if cursor_x + 5 >= GRID_SIZE:
-        cursor_x = 5
-        cursor_y += 6
-
-    if cursor_y + 5 >= GRID_SIZE:
-        cursor_x = 5
-        cursor_y = 5
+            if grid[x+i][y+j] != (0,0,0):
+                return False
+    return True
 
 def generate_creature(word):
-    global cursor_x, cursor_y
+    
     size = max(3, len(word))
+
+    for _ in range(50):
+        spawn_x = random.randint(0, GRID_SIZE-10)
+        spawn_y = random.randint(0, GRID_SIZE-10)
+
+        if area_is_free(spawn_x, spawn_y, 5):
+            break
 
     color_seed = sum(ord(c) for c in word)
     r = (color_seed * 3) % 256
@@ -85,28 +57,37 @@ def generate_creature(word):
     #draw body
     for i in range(size):
         for j in range(size):
-            grid[cursor_x+i][cursor_y+j] = color
+            grid[spawn_x+i][spawn_y+j] = color
 
     #draw eyes
-    grid[cursor_x+1][cursor_y+1] = (0,0,0)
-    grid[cursor_x+size-2][cursor_y+1] = (0,0,0)
+    grid[spawn_x+1][spawn_y+1] = (0,0,0)
+    grid[spawn_x+size-2][spawn_y+1] = (0,0,0)
 
     #random legs
     if random.random() > 0.5:
-        grid[cursor_x+1][cursor_y+size] = color
-        grid[cursor_x+size-2][cursor_y+size] = color
-    move_cursor()
+        grid[spawn_x+1][spawn_y+size] = color
+        grid[spawn_x+size-2][spawn_y+size] = color
 
-    if cursor_x + 10 >= GRID_SIZE:
-        cursor_x = 5
-        cursor_y += 10
-
-rules = {
-    "h": draw_h,
-    "e": draw_e,
-    "l": draw_l,
-    "o": draw_o
-}
+    if "x" in word:
+        grid[spawn_x][spawn_y] = (255,255,255)
+        grid[spawn_x+size-1][spawn_y] = (255,255,255)
+    
+    if "z" in word:
+        grid[spawn_x + size//2][spawn_y + size + 1] = (255,255,255)
+    
+    if "m" in word:
+        for i in range(3):
+            grid[spawn_x+i+1][spawn_y+size] = color
+            grid[spawn_x+size-i-2][spawn_y+size] = color
+        
+    if "o" in word:
+        grid[spawn_x+1][spawn_y+1] = (0,0,0)
+        grid[spawn_x+2][spawn_y+1] = (0,0,0)
+        grid[spawn_x+size-3][spawn_y+1] = (0,0,0)
+        grid[spawn_x+size-2][spawn_y+1] = (0,0,0)
+    else:
+        grid[spawn_x+1][spawn_y+1] = (0,0,0)
+        grid[spawn_x+size-2][spawn_y+1] = (0,0,0)
 
 typed_text = ""
 
@@ -120,7 +101,7 @@ while True:
         grid_y = my // PIXEL_SIZE
         
         if 0 <= grid_x < GRID_SIZE and 0 <= grid_y < GRID_SIZE:
-            grid[grid_x][grid_y] = color
+            grid[grid_x][grid_y] = (255,255,255)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -136,17 +117,17 @@ while True:
 
             if event.key == pygame.K_BACKSPACE:
                 
-                cursor_x -= 6
-                if cursor_x < 5:
-                    cursor_x = GRID_SIZE - 11
-                    cursor_y -= 6
+                spawn_x -= 6
+                if spawn_x < 5:
+                    spawn_x = GRID_SIZE - 11
+                    spawn_y -= 6
                 
-                if cursor_y < 5:
-                    cursor_y = 5
+                if spawn_y < 5:
+                    spawn_y = 5
 
                 for i in range(5):
                     for j in range(5):
-                        grid[cursor_x+i][cursor_y+j] = (0,0,0)
+                        grid[spawn_x+i][spawn_y+j] = (0,0,0)
 
             if event.key == pygame.K_SPACE:
                 generate_creature(typed_text)
@@ -154,10 +135,6 @@ while True:
 
             if event.key == pygame.K_s:
                 pygame.image.save(screen, "pixel_art.png")
-
-            if key in rules:
-                #rules[key]()
-                move_cursor()
 
     screen.fill((30,30,30))
 
