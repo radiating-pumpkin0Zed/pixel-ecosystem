@@ -144,7 +144,7 @@ while True:
                 generate_creature(typed_text)
                 typed_text = ""
 
-            if event.key == pygame.K_s:
+            if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 pygame.image.save(screen, "pixel_art.png")
 
     screen.fill((30,30,30))
