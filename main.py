@@ -292,6 +292,8 @@ def draw_menu():
         "BACKSPACE removes last creature",
         "CTRL+S saves pixel_art.png",
         "",
+        "Creature count: " + str(len(creatures)),
+        "",
         "Creature words change:",
         "x = horns",
         "z = tail",
@@ -368,18 +370,51 @@ while True:
             new_x = creature["x"] + dx
             new_y = creature["y"] + dy
 
-            if creature_area_is_free(
-                new_x,
-                new_y,
-                creature["size"],
-                creature["shape"],
-                creature["word"],
-                creature["has_legs"]
-            ):
+            if 0 <= new_x < GRID_SIZE - creature["size"] and 0 <= new_y < GRID_SIZE - creature["size"]:
                 creature["x"] = new_x
                 creature["y"] = new_y
 
         draw_creature(creature)
+
+    new_creatures = []
+    to_remove = set()
+    
+    # Collision detection ----
+    collisions = []
+
+    for i in range(len(creatures)):
+        for j in range(i+1, len(creatures)):
+
+            c1 = creatures[i]
+            c2 = creatures[j]
+
+            pixels1 = set(get_creature_pixels(
+                c1["x"], c1["y"], c1["size"],
+                c1["shape"], c1["word"], c1["has_legs"]
+            ))
+
+            pixels2 = set(get_creature_pixels(
+                c2["x"], c2["y"], c2["size"],
+                c2["shape"], c2["word"], c2["has_legs"]
+            ))
+
+            if pixels1 & pixels2:
+                collisions.append((i,j))
+    
+    # Handle collisions
+    to_remove = set()
+    for i, j in collisions:
+        if i in to_remove or j in to_remove:
+            continue
+        c1 = creatures[i]
+        c2 = creatures[j]
+        new_word = c1["word"] + c2["word"]
+
+        new_creatures.append(new_word)
+        to_remove.add(i)
+        to_remove.add(j)
+    
+    creatures = [c for idx, c in enumerate(creatures) if idx not in to_remove]
 
     for x in range(GRID_SIZE):
         for y in range(GRID_SIZE):
