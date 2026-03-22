@@ -73,10 +73,19 @@ while True:
 
     screen.fill((30,30,30))
 
-    for creature in creatures:
+    to_remove = set()
+    for idx, creature in enumerate(creatures):
             
         if creature["cooldown"] > 0:
             creature["cooldown"] -= 1
+
+        #Age System
+        creature["age"] += 1
+
+        if creature["age"] > creature["max_age"]:
+            clear_creature(creature, grid, GRID_SIZE)
+            to_remove.add(idx)
+            continue
 
         x = creature["x"]
         y = creature["y"]
@@ -88,7 +97,6 @@ while True:
         creature["blink"] += 1
         if creature["blink"] > 120:
             creature["blink"] = 0
-
 
         if random.random() < 0.02:
             dx = random.choice([-1,0,1])
@@ -128,7 +136,6 @@ while True:
                 collisions.append((i,j))
     
     # Handle collisions
-    to_remove = set()
     for i, j in collisions:
 
         if i in to_remove or j in to_remove:
