@@ -98,7 +98,8 @@ while True:
         if creature["blink"] > 120:
             creature["blink"] = 0
 
-        if random.random() < 0.02:
+        move_chance = 0.05 if creature["is_predator"] else 0.02
+        if random.random() < move_chance:
             dx = random.choice([-1,0,1])
             dy = random.choice([-1,0,1])
    
@@ -143,6 +144,14 @@ while True:
 
         c1 = creatures[i]
         c2 = creatures[j]
+
+        #Predator logic
+        if c1["is_predator"] and not c2["is_predator"]:
+            to_remove.add(j)
+            continue
+        if c2["is_predator"] and not c1["is_predator"]:
+            to_remove.add(i)
+            continue
 
         if c1["cooldown"] > 0 or c2["cooldown"] > 0:
             continue

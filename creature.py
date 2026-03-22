@@ -79,9 +79,13 @@ def draw_creature(creature, grid, GRID_SIZE):
         if in_bounds(frame_x, frame_y, GRID_SIZE):
             grid[frame_x][frame_y] = (255,255,255)
 
-    eye_color = (0,0,0)
-    if creature["blink"] >= 110:
-        eye_color = color
+    #normal or predator
+    if creature["is_predator"]:
+        eye_color = (255, 0, 0)
+    else:
+        eye_color = (0,0,0)
+        if creature["blink"] >= 110:
+            eye_color = color
 
     for eye_x, eye_y in get_eye_positions(x, y, size, word):
         if in_bounds(eye_x, eye_y, GRID_SIZE):
