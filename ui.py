@@ -7,6 +7,9 @@ def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, ty
     title = font.render("Instructions", True, (255,255,255))
     screen.blit(title, (WIDTH + 16, 16))
 
+    predator_count = sum(1 for c in creatures if c["is_predator"])
+    prey_count = len(creatures) - predator_count
+    
     lines = [
         "Type letters to build a name",
         "Press SPACE to spawn creature",
@@ -14,7 +17,9 @@ def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, ty
         "BACKSPACE removes last creature",
         "CTRL+S saves pixel_art.png",
         "",
-        f"Creature count: {len(creatures)}",
+        f"Total creatures: {len(creatures)}",
+        f"Predators: {predator_count}",
+        f"Prey: {prey_count}",
         "",
         "Creature words change:",
         "x = horns",
