@@ -33,6 +33,7 @@ clock = pygame.time.Clock()
 
 creatures = []
 typed_text = ""
+paused = False
 
 while True:
     
@@ -59,7 +60,6 @@ while True:
                 typed_text += key
 
             if event.key == pygame.K_BACKSPACE:
-                
                 if creatures:
                     creature = creatures.pop()
                     clear_creature(creature, grid, GRID_SIZE)
@@ -68,62 +68,71 @@ while True:
                 generate_creature(typed_text, grid, creatures, GRID_SIZE, creature_area_is_free, draw_creature)
                 typed_text = ""
 
+            if event.key == pygame.K_p and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                paused = not paused
+
             if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 pygame.image.save(screen, "pixel_art.png")
 
+            if event.key == pygame.K_r and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                creatures.clear()
+                grid = [[(0,0,0) for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+
     screen.fill((30,30,30))
 
-    to_remove = set()
+    if not paused:
 
-    for idx, creature in enumerate(creatures):
+        to_remove = set()
 
-        if "hunger" not in creature:
-            creature["hunger"] = 0
+        for idx, creature in enumerate(creatures):
+
+            if "hunger" not in creature:
+                creature["hunger"] = 0
+                
+            if creature["cooldown"] > 0:
+                creature["cooldown"] -= 1
+
+            #Age System
+            creature["age"] += 1
+
+            if creature["age"] > creature["max_age"]:
+                clear_creature(creature, grid, GRID_SIZE)
+                to_remove.add(idx)
+                continue
+
+            if creature["is_predator"]:
+                creature["hunger"] += 1
+
+            if creature["is_predator"] and creature["hunger"] > 600:
+                clear_creature(creature, grid, GRID_SIZE)
+                to_remove.add(idx)
+                continue
+
+            x = creature["x"]
+            y = creature["y"]
+            size = creature["size"]
+
+            #clear old position
+            clear_creature(creature, grid, GRID_SIZE)
+
+            creature["blink"] += 1
+            if creature["blink"] > 120:
+                creature["blink"] = 0
+
+            move_chance = 0.08 if creature["is_predator"] else 0.02
             
-        if creature["cooldown"] > 0:
-            creature["cooldown"] -= 1
+            if random.random() < move_chance:
+                dx = random.choice([-1,0,1])
+                dy = random.choice([-1,0,1])
+    
+                new_x = creature["x"] + dx
+                new_y = creature["y"] + dy
 
-        #Age System
-        creature["age"] += 1
+                if 0 <= new_x < GRID_SIZE - creature["size"] and 0 <= new_y < GRID_SIZE - creature["size"]:
+                    creature["x"] = new_x
+                    creature["y"] = new_y
 
-        if creature["age"] > creature["max_age"]:
-            clear_creature(creature, grid, GRID_SIZE)
-            to_remove.add(idx)
-            continue
-
-        if creature["is_predator"]:
-            creature["hunger"] += 1
-
-        if creature["is_predator"] and creature["hunger"] > 600:
-            clear_creature(creature, grid, GRID_SIZE)
-            to_remove.add(idx)
-            continue
-
-        x = creature["x"]
-        y = creature["y"]
-        size = creature["size"]
-
-        #clear old position
-        clear_creature(creature, grid, GRID_SIZE)
-
-        creature["blink"] += 1
-        if creature["blink"] > 120:
-            creature["blink"] = 0
-
-        move_chance = 0.08 if creature["is_predator"] else 0.02
-         
-        if random.random() < move_chance:
-            dx = random.choice([-1,0,1])
-            dy = random.choice([-1,0,1])
-   
-            new_x = creature["x"] + dx
-            new_y = creature["y"] + dy
-
-            if 0 <= new_x < GRID_SIZE - creature["size"] and 0 <= new_y < GRID_SIZE - creature["size"]:
-                creature["x"] = new_x
-                creature["y"] = new_y
-
-        draw_creature(creature, grid, GRID_SIZE)
+            draw_creature(creature, grid, GRID_SIZE)
 
     new_creatures = []
 
@@ -219,7 +228,7 @@ while True:
                     1
             )
 
-    draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text)
+    draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused)
     
     pygame.display.update()
     clock.tick(60)
