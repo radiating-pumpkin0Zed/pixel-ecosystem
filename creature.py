@@ -46,10 +46,17 @@ def draw_creature(creature, grid, GRID_SIZE):
     x = creature["x"]
     y = creature["y"]
     size = creature["size"]
-    color = creature["color"]
     shape = creature["shape"]
     word = creature["word"]
+    color = creature["color"]
 
+    if creature["is_predator"]:
+        color = (
+            min(color[0] + 60, 255),
+            color[1],
+            color[2]
+        )
+        
     draw_creature_shape(x, y, color, shape, grid, GRID_SIZE)
 
     if creature["has_legs"]:
