@@ -45,6 +45,7 @@ def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, ty
     ]
 
     y = 52
+
     for line in lines:
         if line is None:
             continue
@@ -54,13 +55,18 @@ def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, ty
         if "===" in line:
             color = (255, 180, 80)
         elif line.startswith("Predators"):
-            color = (255, 80, 80)
+            if predator_count > prey_count:
+                color = (255, 40, 40)
+            else:
+                color = (255, 120, 120)
         elif line.startswith("Prey"):
             color = (80, 200, 120)
         elif "⚠" in line:
             color = (255, 60, 60)
         elif "PAUSED" in line:
             color = (255, 220, 120)
+        elif "Current text" in line:
+            color = (120, 180, 255)
         
         text = small_font.render(line, True, color)
         screen.blit(text, (WIDTH + 16, y))
