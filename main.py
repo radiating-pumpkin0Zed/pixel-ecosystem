@@ -34,6 +34,7 @@ clock = pygame.time.Clock()
 creatures = []
 typed_text = ""
 paused = False
+population_history = []
 
 while True:
     
@@ -119,7 +120,7 @@ while True:
             if creature["blink"] > 120:
                 creature["blink"] = 0
 
-            move_chance = 0.08 if creature["is_predator"] else 0.02
+            move_chance = 0.08 if creature.get("is_predator") else 0.02
             
             if random.random() < move_chance:
                 dx = random.choice([-1,0,1])
@@ -197,6 +198,11 @@ while True:
         clear_creature(creatures[idx], grid, GRID_SIZE)
 
     creatures = [c for idx, c in enumerate(creatures) if idx not in to_remove]
+
+    population_history.append(len(creatures))
+
+    if len(population_history) > 100:
+        population_history.pop(0)
     
     for word in new_creatures:
         generate_creature(
@@ -228,7 +234,7 @@ while True:
                     1
             )
 
-    draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused)
+    draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused, population_history)
     
     pygame.display.update()
     clock.tick(60)

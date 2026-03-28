@@ -1,6 +1,6 @@
 import pygame
 
-def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused):
+def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused, population_history):
     pygame.draw.rect(screen, (25,25,30), (WIDTH, 0, MENU_WIDTH, HEIGHT))
     pygame.draw.line(screen, (70,70,70), (WIDTH, 0), (WIDTH, HEIGHT), 2)
 
@@ -76,3 +76,25 @@ def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, ty
             continue
         else:
             y += 26
+    
+    #GRAPH 
+    graph_x = WIDTH + 16
+    graph_y = HEIGHT - 120
+    graph_width = MENU_WIDTH - 32
+    graph_height = 100
+
+    pygame.draw.rect(screen, (40,40,50), (graph_x, graph_y, graph_width, graph_height))
+
+    if len(population_history) > 1:
+        max_pop = max(population_history)
+
+        if max_pop > 0:
+
+            for i in range(1, len(population_history)):
+                x1 = graph_x + (i-1) * (graph_width / len(population_history))
+                y1 = graph_y + graph_height - (population_history[i-1] / max_pop) * graph_height
+
+                x2 = graph_x + i * (graph_width / len(population_history))
+                y2 = graph_y + graph_height - (population_history[i] / max_pop) * graph_height
+
+                pygame.draw.line(screen, (100, 200, 255), (x1, y1), (x2, y2), 2)
