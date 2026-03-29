@@ -35,6 +35,8 @@ creatures = []
 typed_text = ""
 paused = False
 population_history = []
+predator_history = []
+prey_history = []
 
 while True:
     
@@ -89,6 +91,9 @@ while True:
 
             if "hunger" not in creature:
                 creature["hunger"] = 0
+
+            if creature.get("spawn_effect", 0) > 0:
+                creature["spawn_effect"] -= 1
                 
             if creature["cooldown"] > 0:
                 creature["cooldown"] -= 1
@@ -199,10 +204,17 @@ while True:
 
     creatures = [c for idx, c in enumerate(creatures) if idx not in to_remove]
 
+    predator_count = sum(1 for c in creatures if c.get("is_predator"))
+    prey_count = len(creatures) - predator_count
+
     population_history.append(len(creatures))
+    predator_history.append(predator_count)
+    prey_history.append(prey_count)
 
     if len(population_history) > 100:
         population_history.pop(0)
+        predator_history.pop(0)
+        prey_history.pop(0)
     
     for word in new_creatures:
         generate_creature(
@@ -234,7 +246,7 @@ while True:
                     1
             )
 
-    draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused, population_history)
+    draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused, population_history, predator_history, prey_history)
     
     pygame.display.update()
     clock.tick(60)

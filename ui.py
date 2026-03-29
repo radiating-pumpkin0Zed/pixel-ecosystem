@@ -1,6 +1,6 @@
 import pygame
 
-def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused, population_history):
+def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused, population_history, predator_history, prey_history):
     pygame.draw.rect(screen, (25,25,30), (WIDTH, 0, MENU_WIDTH, HEIGHT))
     pygame.draw.line(screen, (70,70,70), (WIDTH, 0), (WIDTH, HEIGHT), 2)
 
@@ -92,9 +92,19 @@ def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, ty
 
             for i in range(1, len(population_history)):
                 x1 = graph_x + (i-1) * (graph_width / len(population_history))
-                y1 = graph_y + graph_height - (population_history[i-1] / max_pop) * graph_height
-
                 x2 = graph_x + i * (graph_width / len(population_history))
-                y2 = graph_y + graph_height - (population_history[i] / max_pop) * graph_height
 
+                #total population
+                y1 = graph_y + graph_height - (population_history[i-1] / max_pop) * graph_height
+                y2 = graph_y + graph_height - (population_history[i] / max_pop) * graph_height
                 pygame.draw.line(screen, (100, 200, 255), (x1, y1), (x2, y2), 2)
+
+                #predators
+                y1 = graph_y + graph_height - (predator_history[i-1] / max_pop) * graph_height
+                y2 = graph_y + graph_height - (population_history[i] / max_pop) * graph_height
+                pygame.draw.line(screen, (255, 80, 80), (x1, y1), (x2, y2), 2)
+
+                #prey
+                y1 = graph_y + graph_height - (predator_history[i-1] / max_pop) * graph_height
+                y2 = graph_y + graph_height - (population_history[i] / max_pop) * graph_height
+                pygame.draw.line(screen, (80, 200, 120), (x1, y1), (x2, y2), 2)

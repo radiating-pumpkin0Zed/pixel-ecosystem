@@ -78,6 +78,8 @@ def generate_creature(word, grid, creatures, GRID_SIZE, creature_area_is_free, d
 
     color = (r, g, b)
 
+    is_predator = random.random() < 0.1
+
     creature = {
         "x": spawn_x,
         "y": spawn_y,
@@ -90,8 +92,9 @@ def generate_creature(word, grid, creatures, GRID_SIZE, creature_area_is_free, d
         "cooldown": 0,
         "age": 0,
         "max_age": random.randint(1000, 2000),
-        "is_predator": random.random() < 0.08,
-        "hunger": -100
+        "hunger": -100,
+        "is_predator": is_predator,
+        "spawn_effect": 10 if is_predator else 0,
     }
 
     draw_creature(creature, grid, GRID_SIZE)
