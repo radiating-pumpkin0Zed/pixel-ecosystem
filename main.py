@@ -146,6 +146,17 @@ while True:
             if random.random() < move_chance:
                 dx, dy = 0, 0
 
+                for fx, fy in fruits:
+                    dist_x = fx - creature["x"]
+                    dist_y = fy - creature["y"]
+
+                    distance = abs(dist_x) + abs(dist_y)
+
+                    if distance < 6:
+                        dx = 1 if dist_x > 0 else -1 if dist_x < 0 else 0
+                        dy = 1 if dist_y > 0 else -1 if dist_y < 0 else 0 
+                        break 
+
                 for other in creatures:
                     if other == creature:
                         continue
@@ -179,15 +190,16 @@ while True:
                     creature["y"] = new_y
                 
                 for fx, fy in fruits:
-                    if abs(fx - creature["x"]) <= 1 and abs(fy - creature["y"]) <= 1:
+                    if abs(fx - creature["x"]) <= 1 and abs(fy - creature["y"]) <= 2:
 
                         fruits.remove((fx, fy))
 
                         # apply effect
                         if creature.get("is_predator"):
                             creature["hunger"] = max(0, creature["hunger"] - 200)
+                            creature["cooldown"] = 0
                         else:
-                            creature["max_age"] += 300
+                            creature["max_age"] += 500
 
                         break
 
