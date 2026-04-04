@@ -38,6 +38,7 @@ population_history = []
 predator_history = []
 prey_history = []
 fruits = []
+fruit_timer = 0
 
 while True:
     
@@ -83,6 +84,7 @@ while True:
                 population_history.clear()
                 predator_history.clear()
                 prey_history.clear()
+                fruits.clear()
                 grid = [[(0,0,0) for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
 
     screen.fill((30,30,30))
@@ -225,16 +227,16 @@ while True:
         c2 = creatures[j]
 
         #Predator logic
-        if c1["is_predator"] and not c2["is_predator"]:
+        if c1.get("is_predator") and not c2.get("is_predator"):
             to_remove.add(j)
             c1["hunger"] = 0 #just ate
             continue
-        if c2["is_predator"] and not c1["is_predator"]:
+        if c2.get("is_predator") and not c1.get("is_predator"):
             to_remove.add(i)
             c2["hunger"] = 0
             continue
 
-        if c1["is_predator"] and c2["is_predator"]:
+        if c1.get("is_predator") and c2.get("is_predator"):
             if random.random() < 0.5:
                 to_remove.add(i)
             else:
@@ -255,10 +257,13 @@ while True:
 
     creatures = [c for idx, c in enumerate(creatures) if idx not in to_remove]
 
-    if random.random() < 0.002 and len(fruits) < 5:
+    fruit_timer += 1
+
+    if fruit_timer > random.randint(100,120) and len(fruits) < 5:
         fx = random.randint(0, GRID_SIZE - 1)
         fy = random.randint(0, GRID_SIZE - 1)
         fruits.append((fx, fy))
+        fruit_timer = 0
 
     predator_count = sum(1 for c in creatures if c.get("is_predator"))
     prey_count = len(creatures) - predator_count
@@ -292,6 +297,13 @@ while True:
             if (x, y) in fruits:
                 color = (255, 0, 255)
 
+            pygame.draw.rect(
+                    screen,
+                    color,
+                    (x*PIXEL_SIZE, y*PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE)
+            )
+
+            if (x,y) in fruits:
                 pygame.draw.rect(
                     screen,
                     (255,255,255),
@@ -299,11 +311,6 @@ while True:
                     1
                 )
 
-            pygame.draw.rect(
-                    screen,
-                    color,
-                    (x*PIXEL_SIZE, y*PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE)
-            )
 
             pygame.draw.rect(
                     screen,
@@ -312,7 +319,12 @@ while True:
                     1
             )
 
-    draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused, population_history, predator_history, prey_history)
+    draw_menu(
+        screen, WIDTH, MENU_WIDTH, HEIGHT,
+        font, small_font,
+        creatures, typed_text, paused,
+        population_history, predator_history, prey_history,
+        fruits)
     
     pygame.display.update()
     clock.tick(60)

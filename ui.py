@@ -1,6 +1,6 @@
 import pygame
 
-def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused, population_history, predator_history, prey_history):
+def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, typed_text, paused, population_history, predator_history, prey_history, fruits):
     pygame.draw.rect(screen, (25,25,30), (WIDTH, 0, MENU_WIDTH, HEIGHT))
     pygame.draw.line(screen, (70,70,70), (WIDTH, 0), (WIDTH, HEIGHT), 2)
 
@@ -34,6 +34,7 @@ def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, ty
         f"Total creatures: {len(creatures)}",
         f"Predators: {predator_count}",
         f"Prey: {prey_count}",
+        f"Helix Fruits: {len(fruits)}",
         "",
         "=== TRAITS ===",
         "x = horns",
@@ -61,6 +62,8 @@ def draw_menu(screen, WIDTH, MENU_WIDTH, HEIGHT, font, small_font, creatures, ty
                 color = (255, 120, 120)
         elif line.startswith("Prey"):
             color = (80, 200, 120)
+        elif "Helix Fruits" in line:
+            color=(200, 100, 255)
         elif "⚠" in line:
             color = (255, 60, 60)
         elif "PAUSED" in line:
