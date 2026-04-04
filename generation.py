@@ -81,6 +81,13 @@ def generate_creature(word, grid, creatures, GRID_SIZE, creature_area_is_free, d
     is_predator = random.random() < 0.1
     personality = random.choice(["aggressive", "lazy", "normal"])
 
+    if personality == "lazy":
+        max_age = random.randint(1000,1800)
+    elif personality == "aggressive":
+        max_age = random.randint(600, 1200)
+    else:
+        max_age = random.randint(800, 1500)
+
     creature = {
         "x": spawn_x,
         "y": spawn_y,
@@ -92,8 +99,8 @@ def generate_creature(word, grid, creatures, GRID_SIZE, creature_area_is_free, d
         "blink": 0,
         "cooldown": 0,
         "age": 0,
-        "max_age": random.randint(1000, 2000),
-        "hunger": -100,
+        "max_age": max_age,
+        "hunger": 0,
         "is_predator": is_predator,
         "spawn_effect": 10 if is_predator else 0,
         "personality": personality
